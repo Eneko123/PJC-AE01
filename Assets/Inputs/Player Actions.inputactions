@@ -219,7 +219,7 @@
             "id": "b05b7b35-9b41-4020-b47d-ed2b9a6b62a5",
             "actions": [
                 {
-                    "name": "New action",
+                    "name": "Move betwen buttons",
                     "type": "Button",
                     "id": "bd437b1d-1dcf-4e74-b52c-73670fe1a00a",
                     "expectedControlType": "",
@@ -229,19 +229,7 @@
                     "priority": 0
                 }
             ],
-            "bindings": [
-                {
-                    "name": "",
-                    "id": "7963429f-8957-4a17-ae2f-3b90c235d806",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "New action",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                }
-            ]
+            "bindings": []
         }
     ],
     "controlSchemes": []
