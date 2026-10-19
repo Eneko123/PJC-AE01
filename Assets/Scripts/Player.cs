@@ -1,109 +1,53 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XR;
 
 [RequireComponent(typeof(PlayerInput))]
-
+[RequireComponent(typeof(CharacterController))]
 public class Player : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed;
-    [SerializeField] private float jumpForce;
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float jumpHeight = 1.2f;
 
     private bool canPlayerMove = true;
     private bool canCameraMove = true;
-    private bool onFloor;
-    //private Vector3 playerOffset = new Vector3(0, 0.5f, 0);
 
-    private float verticalVelocity;
-    private float gravity = -9.8f;
+    private CharacterController controller;
     private Vector2 moveInput;
-
-    private LayerMask floorLayer;
-    private float rayDistance = 1.01f;
+    private float verticalVelocity;
+    private const float Gravity = -9.8f;
+    private const float GroundedStick = -2f;
 
     private void Awake()
     {
-        floorLayer = LayerMask.GetMask("Floor");
+        controller = GetComponent<CharacterController>();
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Update()
     {
-        
-        
-    }
-
-    private void FixedUpdate()
-    {
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, rayDistance, floorLayer))
-        {
-            onFloor = true;
-            // Debug.Log($"Tocando? {hit}, {onFloor}. Layer: {floorLayer}");
-        }
+        if (controller.isGrounded && verticalVelocity < 0f)
+            verticalVelocity = GroundedStick;
         else
-        {
-            onFloor= false;
-        }
-    }
+            verticalVelocity += Gravity * Time.deltaTime;
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (onFloor && verticalVelocity < 0f)
-        {
-            verticalVelocity = 0f;
-        }
-        else
-        {
-            verticalVelocity += gravity * Time.deltaTime;
-        }
-
-        Vector3 move = Vector3.zero;
-        move = new Vector3(moveInput.x, 0, moveInput.y) * moveSpeed;
+        Vector3 move = new Vector3(moveInput.x, 0f, moveInput.y) * moveSpeed;
         move.y = verticalVelocity;
-        transform.position += move * Time.deltaTime;
+
+        controller.Move(move * Time.deltaTime);
     }
 
     private void OnMove(InputValue value)
     {
-        if (canPlayerMove)
-        {
-            moveInput = value.Get<Vector2>();
-        }
+        moveInput = canPlayerMove ? value.Get<Vector2>() : Vector2.zero;
     }
+
     private void OnJump(InputValue value)
     {
-        if (canPlayerMove && value.isPressed && onFloor)
-        {
-            verticalVelocity = Mathf.Sqrt(jumpForce * -2f * gravity);
-        }
+        if (canPlayerMove && value.isPressed && controller.isGrounded)
+            verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * Gravity);
     }
 
-    private void OnDrawGizmos()
-    {
-        if (onFloor)
-        {
-            Gizmos.color = Color.red;
-        }
-        else
-        {
-            Gizmos.color = Color.green;
-        }
-        Gizmos.DrawRay(transform.position, Vector3.down * rayDistance);
-    }
-
-
-    public bool GetCanPlayerMove()
-    {
-        return canPlayerMove;
-    }
-    public bool GetCanCameraMove()
-    {
-        return canCameraMove;
-    }
+    public bool GetCanPlayerMove() => canPlayerMove;
+    public bool GetCanCameraMove() => canCameraMove;
     public void SetCanPlayerMove(bool newCanPlayerMove) => canPlayerMove = newCanPlayerMove;
-    
     public void SetCanCameraMove(bool newCanCameraMove) => canCameraMove = newCanCameraMove;
-
 }
