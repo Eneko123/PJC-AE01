@@ -22,6 +22,11 @@ public class Player : MonoBehaviour
         controller = GetComponent<CharacterController>();
     }
 
+    private void Start()
+    {
+        GetComponent<PlayerInput>().actions.FindActionMap("UI").Enable();
+    }
+
     private void Update()
     {
         if (controller.isGrounded && verticalVelocity < 0f)
@@ -29,10 +34,11 @@ public class Player : MonoBehaviour
         else
             verticalVelocity += Gravity * Time.deltaTime;
 
-        Vector3 move = new Vector3(moveInput.x, 0f, moveInput.y) * moveSpeed;
+        // Movimiento relativo a hacia dónde mira el jugador
+        Vector3 move = (transform.right * moveInput.x + transform.forward * moveInput.y) * moveSpeed;
         move.y = verticalVelocity;
 
-        controller.Move(move * Time.deltaTime);
+        controller.Move(move * Time.deltaTime);   // un único Move por frame
     }
 
     private void OnMove(InputValue value)
@@ -42,8 +48,15 @@ public class Player : MonoBehaviour
 
     private void OnJump(InputValue value)
     {
+        if (GameManager.Instance != null && !GameManager.Instance.IsPlaying) return;   
         if (canPlayerMove && value.isPressed && controller.isGrounded)
             verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * Gravity);
+    }
+
+    private void OnPause(InputValue value)
+    {
+        if (value.isPressed && GameManager.Instance != null)
+            GameManager.Instance.TogglePause();
     }
 
     public bool GetCanPlayerMove() => canPlayerMove;
