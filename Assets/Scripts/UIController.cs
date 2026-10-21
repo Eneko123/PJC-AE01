@@ -44,13 +44,16 @@ public class UIController : MonoBehaviour
         returnButton.onClick.AddListener(gm.ReturnMenu);
         returnEndButton.onClick.AddListener(gm.ReturnMenu);
 
-        // En consola las aplicaciones no se cierran desde el propio juego.
+        // En consola las aplicaciones no se cierran desde el propio juego
         quitButton.gameObject.SetActive(!Application.isConsolePlatform);
 
-        // Identificación de la build: nombre, versión, configuración y autor (Company Name).
-        versionText.text = $"{Application.productName} v{Application.version} " +
-                           (Debug.isDebugBuild ? "[DEV]" : "[RELEASE]") +
-                           $" - {Application.companyName}";
+        // Resalte visible del boton con foco
+        foreach (var b in new[] { playButton, quitButton, resumeButton, returnButton, restartButton, returnEndButton })
+            if (b.GetComponent<ButtonSelectionFeedback>() == null)
+                b.gameObject.AddComponent<ButtonSelectionFeedback>();
+
+        // Identificacion de la build: nombre, versión, configuracion y autor
+        versionText.text = $"{Application.productName} v{Application.version} " + (Debug.isDebugBuild ? "[DEV]" : "[RELEASE]") + $" - {Application.companyName}";
         RefreshScore();
         OnStateChanged(gm.State);   // estado inicial (normalmente Menu)
     }
@@ -91,7 +94,7 @@ public class UIController : MonoBehaviour
                 Focus(playButton);
                 break;
             case GameState.Paused:
-                pauseMessageText.text = gm.PauseMessage;   // "Menú de pausa", mando desconectado, foco perdido...
+                pauseMessageText.text = gm.PauseMessage;   // "Menu de pausa", mando desconectado, foco perdido...
                 Focus(resumeButton);
                 break;
             case GameState.Finished:
@@ -105,7 +108,7 @@ public class UIController : MonoBehaviour
         }
     }
 
-    // Foco inicial para navegar con el D-pad/stick sin ratón
+    // Foco inicial para navegar con el D-pad/stick sin raton
     private void Focus(Button b)
     {
         focusButton = b;

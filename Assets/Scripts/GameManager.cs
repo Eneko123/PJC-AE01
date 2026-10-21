@@ -38,7 +38,6 @@ public class GameManager : MonoBehaviour
     {
         Instance = this;
 
-        QualitySettings.vSyncCount = 0;               // con vSync activa, targetFrameRate se ignora
         Application.targetFrameRate = targetFrameRate;
 
         if (storage == null)
@@ -71,7 +70,7 @@ public class GameManager : MonoBehaviour
         if (TimeLeft <= 0f) { TimeLeft = 0f; Finish(false); }
     }
 
-    // ---------- Fase 4: pérdida de foco / suspensión ----------
+    // perdida de foco / suspension 
 
     private void OnApplicationFocus(bool hasFocus)
     {
@@ -104,7 +103,7 @@ public class GameManager : MonoBehaviour
         StateChanged?.Invoke(State);
     }
 
-    // ---------- Flujo de juego ----------
+    // Flujo de juego 
 
     public void StartGame()
     {
@@ -114,7 +113,7 @@ public class GameManager : MonoBehaviour
         StateChanged?.Invoke(State);
     }
 
-    // Recarga la escena: tiempo, puntuación y bolas vuelven a su estado inicial.
+    // Recarga la escena: tiempo, puntuacion y bolas vuelven a su estado inicial.
     public void ReturnMenu()
     {
         skipMenuOnLoad = false;

@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-// Va en el mismo GameObject que Player y PlayerInput.
-// Mensajes: OnTake y OnThrow (el nombre debe coincidir con el de la acción en el Input Actions).
 public class PlayerCarry : MonoBehaviour
 {
     [SerializeField] private Transform cameraPivot;

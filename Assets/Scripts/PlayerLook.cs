@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-// El cuerpo gira en horizontal (yaw) y la cámara en vertical (pitch).
+// El cuerpo gira en horizontal (yaw) y la camara en vertical (pitch).
 [RequireComponent(typeof(Player), typeof(PlayerInput))]
 public class PlayerLook : MonoBehaviour
 {
@@ -31,7 +31,7 @@ public class PlayerLook : MonoBehaviour
     private void OnLook(InputValue value)
     {
         lookInput = value.Get<Vector2>();
-        // El ratón entrega píxeles por frame; el stick entrega -1..1. Se tratan distinto.
+        // El raton entrega pixeles por frame; el stick entrega -1..1. Se tratan distinto.
         fromMouse = lookAction.activeControl != null && lookAction.activeControl.device is Mouse;
     }
 

@@ -1,4 +1,4 @@
-// Implementación sin dependencias de plataforma: valor por defecto si nadie inyecta otra y útil para pruebas.
+// Implementacion sin dependencias de plataforma
 public class InMemoryScoreStorage : IScoreStorage
 {
     private float bestTime;

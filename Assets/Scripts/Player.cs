@@ -48,7 +48,7 @@ public class Player : MonoBehaviour
 
     private void OnJump(InputValue value)
     {
-        if (GameManager.Instance != null && !GameManager.Instance.IsPlaying) return;   
+        if (GameManager.Instance != null && !GameManager.Instance.IsPlaying) return;
         if (canPlayerMove && value.isPressed && controller.isGrounded)
             verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * Gravity);
     }
@@ -57,6 +57,22 @@ public class Player : MonoBehaviour
     {
         if (value.isPressed && GameManager.Instance != null)
             GameManager.Instance.TogglePause();
+    }
+
+    private void OnDeviceLost()
+    {
+        moveInput = Vector2.zero;   // evita que el personaje siga andando con el input anterior
+        DevLog.Log("Dispositivo de entrada desconectado");
+        if (GameManager.Instance != null)
+            GameManager.Instance.PauseWithMessage("Mando desconectado.\nReconéctalo para continuar");
+    }
+
+    private void OnDeviceRegained()
+    {
+        DevLog.Log("Dispositivo de entrada reconectado");
+        // No se reanuda solo
+        if (GameManager.Instance != null)
+            GameManager.Instance.SetPauseMessage("Mando reconectado.\nPulsa Continuar");
     }
 
     public bool GetCanPlayerMove() => canPlayerMove;
