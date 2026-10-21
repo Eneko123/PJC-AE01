@@ -27,12 +27,13 @@ public class UIController : MonoBehaviour
     [SerializeField] private Button restartButton;
     [SerializeField] private Button returnEndButton;
 
-    private int lastSeconds = -1;   // solo reescribimos el texto cuando cambia el segundo
-    private Button focusButton;     // botón que debe tener el foco en el panel visible
+    private GameManager gm;          // cacheado: evita acceder a Instance en cada Update
+    private int lastSeconds = -1;    // solo reescribimos el texto cuando cambia el segundo
+    private Button focusButton;      // botón que debe tener el foco en el panel visible
 
     private void Start()
     {
-        var gm = GameManager.Instance;
+        gm = GameManager.Instance;
         gm.StateChanged += OnStateChanged;
         gm.ScoreChanged += RefreshScore;
 
@@ -43,17 +44,22 @@ public class UIController : MonoBehaviour
         returnButton.onClick.AddListener(gm.ReturnMenu);
         returnEndButton.onClick.AddListener(gm.ReturnMenu);
 
+        // En consola las aplicaciones no se cierran desde el propio juego.
+        quitButton.gameObject.SetActive(!Application.isConsolePlatform);
+
+        // Identificación de la build: nombre, versión, configuración y autor (Company Name).
         versionText.text = $"{Application.productName} v{Application.version} " +
-                           (Debug.isDebugBuild ? "[DEV]" : "[RELEASE]");
+                           (Debug.isDebugBuild ? "[DEV]" : "[RELEASE]") +
+                           $" - {Application.companyName}";
         RefreshScore();
         OnStateChanged(gm.State);   // estado inicial (normalmente Menu)
     }
 
     private void OnDestroy()
     {
-        if (GameManager.Instance == null) return;
-        GameManager.Instance.StateChanged -= OnStateChanged;
-        GameManager.Instance.ScoreChanged -= RefreshScore;
+        if (gm == null) return;
+        gm.StateChanged -= OnStateChanged;
+        gm.ScoreChanged -= RefreshScore;
     }
 
     private void Update()
@@ -64,18 +70,17 @@ public class UIController : MonoBehaviour
             EventSystem.current.SetSelectedGameObject(focusButton.gameObject);
         }
 
-        int s = Mathf.CeilToInt(GameManager.Instance.TimeLeft);
+        int s = Mathf.CeilToInt(gm.TimeLeft);
         if (s == lastSeconds) return;
         lastSeconds = s;
         timerText.SetText("{0}", s);
     }
 
     private void RefreshScore() =>
-        scoreText.SetText("{0}/{1}", GameManager.Instance.Score, GameManager.Instance.TotalBalls);
+        scoreText.SetText("{0}/{1}", gm.Score, gm.TotalBalls);
 
     private void OnStateChanged(GameState state)
     {
-        var gm = GameManager.Instance;
         startPanel.SetActive(state == GameState.Menu);
         pausePanel.SetActive(state == GameState.Paused);
         endPanel.SetActive(state == GameState.Finished);
@@ -86,7 +91,7 @@ public class UIController : MonoBehaviour
                 Focus(playButton);
                 break;
             case GameState.Paused:
-                pauseMessageText.text = "Menu de pausa";
+                pauseMessageText.text = gm.PauseMessage;   // "Menú de pausa", mando desconectado, foco perdido...
                 Focus(resumeButton);
                 break;
             case GameState.Finished:

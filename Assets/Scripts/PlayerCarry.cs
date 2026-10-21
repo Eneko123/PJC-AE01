@@ -21,13 +21,14 @@ public class PlayerCarry : MonoBehaviour
     {
         if (!value.isPressed || held != null || !CanAct) return;
 
-        // Coge la bola a la que miras 
+        // Coge la bola a la que miras
         if (!Physics.SphereCast(cameraPivot.position, pickupRadius, cameraPivot.forward, out RaycastHit hit, pickupDistance, ballLayer)) return;
 
         if (!hit.collider.TryGetComponent(out Ball ball) || ball.IsHeld) return;
 
         held = ball;
         held.PickUp(holdPoint);
+        DevLog.Log("Bola recogida");
     }
 
     private void OnThrow(InputValue value)
@@ -36,8 +37,10 @@ public class PlayerCarry : MonoBehaviour
 
         held.Throw(cameraPivot.forward * throwSpeed + Vector3.up * throwUpward);
         held = null;
+        DevLog.Log("Bola lanzada");
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         if (cameraPivot == null) return;
@@ -58,4 +61,5 @@ public class PlayerCarry : MonoBehaviour
 
         if (hitBall) Gizmos.DrawSphere(hit.point, 0.05f);  // punto exacto de contacto
     }
+#endif
 }
